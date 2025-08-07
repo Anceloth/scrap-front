@@ -35,17 +35,17 @@ class AuthService {
   /**
    * Register new user
    */
-  async register(userData: RegisterRequest): Promise<RegisterResponse> {
+  async register(userData: RegisterRequest): Promise<any> {
     try {
       logger.info('Attempting registration for:', userData.email);
       
-      const response = await apiClient.post<ApiResponse<RegisterResponse>>(
+      const response = await apiClient.post<ApiResponse<any>>(
         `${this.endpoint}/register`,
         userData
       );
 
-      logger.info('Registration successful for:', userData.email);
-      return response.data;
+      logger.info(response.message, userData.email);
+      return response;
       
     } catch (error) {
       logger.error('Registration failed for:', userData.email, error);

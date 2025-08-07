@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -25,7 +25,7 @@ export const AuthForm: React.FC = () => {
   
   // Auth context
   const { state, login, register } = useAuth();
-  const { error: authError, isLoading: authLoading } = state;
+  const { error: authError, isLoading: authLoading, registrationSuccess } = state;
   
   const [formData, setFormData] = useState<RegisterFormData>({
     username: '',
@@ -35,6 +35,22 @@ export const AuthForm: React.FC = () => {
   });
   const [errors, setErrors] = useState<Partial<RegisterFormData>>({});
   const [submitError, setSubmitError] = useState<string>('');
+
+  // Auto-switch to login mode after successful registration
+  useEffect(() => {
+    if (registrationSuccess) {
+      setMode('login');
+      // Clear form data
+      setFormData({
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      });
+      setErrors({});
+      setSubmitError('');
+    }
+  }, [registrationSuccess]);
 
   // Handle input changes
   const handleInputChange = (field: keyof RegisterFormData) => (
@@ -242,6 +258,23 @@ export const AuthForm: React.FC = () => {
               }}
             >
               {authError}
+            </Alert>
+          )}
+
+          {/* Registration Success Message */}
+          {registrationSuccess && (
+            <Alert 
+              severity="success" 
+              sx={{ 
+                mb: 2,
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                '& .MuiAlert-message': {
+                  width: '100%',
+                  textAlign: 'left'
+                }
+              }}
+            >
+              Registration successful! Please sign in with your credentials.
             </Alert>
           )}
         </Box>

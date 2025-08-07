@@ -9,6 +9,7 @@ type AuthAction =
   | { type: 'AUTH_START' }
   | { type: 'AUTH_SUCCESS'; payload: { user: User; accessToken: string } }
   | { type: 'AUTH_FAILURE'; payload: string }
+  | { type: 'REGISTER_SUCCESS' }
   | { type: 'LOGOUT' }
   | { type: 'CLEAR_ERROR' };
 
@@ -19,6 +20,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   isLoading: false,
   error: null,
+  registrationSuccess: false,
 };
 
 // Auth reducer
@@ -29,6 +31,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         ...state,
         isLoading: true,
         error: null,
+        registrationSuccess: false,
       };
 
     case 'AUTH_SUCCESS':
@@ -39,6 +42,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         isAuthenticated: true,
         isLoading: false,
         error: null,
+        registrationSuccess: false,
       };
 
     case 'AUTH_FAILURE':
@@ -49,6 +53,18 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         isAuthenticated: false,
         isLoading: false,
         error: action.payload,
+        registrationSuccess: false,
+      };
+
+    case 'REGISTER_SUCCESS':
+      return {
+        ...state,
+        user: null,
+        accessToken: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: null,
+        registrationSuccess: true,
       };
 
     case 'LOGOUT':
@@ -59,12 +75,14 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         isAuthenticated: false,
         isLoading: false,
         error: null,
+        registrationSuccess: false,
       };
 
     case 'CLEAR_ERROR':
       return {
         ...state,
         error: null,
+        registrationSuccess: false,
       };
 
     default:
@@ -188,18 +206,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await authService.register({ username, email, password });
       
-      const authData: StoredAuthData = {
-        user: response.user,
-        accessToken: response.accessToken,
-      };
-
-      saveAuthData(authData);
+      // Registration successful, but don't auto-login since endpoint doesn't return JWT
+      dispatch({ type: 'REGISTER_SUCCESS' });
       
-      dispatch({
-        type: 'AUTH_SUCCESS',
-        payload: authData,
-      });
-
+      console.log(response);
       logger.info('User registered successfully:', response.user.email);
 
     } catch (error) {
