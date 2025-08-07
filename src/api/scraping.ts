@@ -51,6 +51,21 @@ export interface GetLinksParams {
   url: string;
 }
 
+export interface ScrapeUrlRequest {
+  url: string;
+}
+
+export interface ScrapeUrlResponse {
+  url: {
+    id: string;
+    name: string;
+    url: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  totalLinks: number;
+}
+
 class ScrapingService {
   private readonly endpoint = '/scraping';
 
@@ -107,6 +122,27 @@ class ScrapingService {
       
     } catch (error) {
       logger.error('Failed to fetch links:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Scrape a new URL
+   */
+  async scrapeUrl(request: ScrapeUrlRequest): Promise<ScrapeUrlResponse> {
+    try {
+      logger.info('Starting URL scraping:', request.url);
+      
+      const response = await apiClient.post<ApiResponse<ScrapeUrlResponse>>(
+        `${this.endpoint}/scrape-url`,
+        request
+      );
+
+      logger.info('URL scraped successfully:', response.data);
+      return response.data;
+      
+    } catch (error) {
+      logger.error('Failed to scrape URL:', error);
       throw error;
     }
   }

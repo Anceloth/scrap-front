@@ -5,11 +5,16 @@ import {
   Typography,
   Chip,
   Paper,
+  TextField,
+  Button,
+  Alert,
+  Snackbar,
 } from '@mui/material';
 import {
   Link as LinkIcon,
   CalendarToday,
   TableChart,
+  Search as SearchIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
@@ -28,6 +33,11 @@ export const Dashboard: React.FC = () => {
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Scraping states
+  const [scrapeUrl, setScrapeUrl] = useState('');
+  const [scraping, setScraping] = useState(false);
+  const [scrapeMessage, setScrapeMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
   // Pagination state
   const [page, setPage] = useState(0);
@@ -68,6 +78,52 @@ export const Dashboard: React.FC = () => {
     const url = row.url as string;
     const name = row.name as string;
     navigate(`/links?url=${encodeURIComponent(url)}&name=${encodeURIComponent(name)}`);
+  };
+
+  // Handle URL scraping
+  const handleScrapeUrl = async () => {
+    if (!scrapeUrl.trim()) {
+      setScrapeMessage({ type: 'error', text: 'Please enter a valid URL' });
+      return;
+    }
+
+    // Basic URL validation
+    try {
+      new URL(scrapeUrl);
+    } catch {
+      setScrapeMessage({ type: 'error', text: 'Please enter a valid URL format' });
+      return;
+    }
+
+    try {
+      setScraping(true);
+      setScrapeMessage(null);
+      
+      const response = await scrapingService.scrapeUrl({ url: scrapeUrl });
+      
+      setScrapeMessage({ 
+        type: 'success', 
+        text: `Successfully scraped ${response.url.name}! Found ${response.totalLinks} links.` 
+      });
+      
+      // Clear input and refresh data
+      setScrapeUrl('');
+      setPage(0); // Reset to first page
+      await loadUrls(0); // Refresh the URLs list
+      
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to scrape URL';
+      setScrapeMessage({ type: 'error', text: errorMessage });
+    } finally {
+      setScraping(false);
+    }
+  };
+
+  // Handle input key press (Enter to scrape)
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' && !scraping) {
+      handleScrapeUrl();
+    }
   };
 
   // Transform API data to match table format
@@ -146,6 +202,78 @@ export const Dashboard: React.FC = () => {
           >
             Welcome back, {user?.username}! Here's your URLs data overview.
           </Typography>
+
+                  {/* URL Scraping Section */}
+        <Paper 
+          elevation={0}
+          sx={{
+            mb: 4,
+            p: 3,
+            backgroundColor: (theme) => 
+              theme.palette.mode === 'dark' 
+                ? 'rgba(255, 255, 255, 0.05)'
+                : 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(20px)',
+            border: (theme) => 
+              `1px solid ${theme.palette.mode === 'dark' 
+                ? 'rgba(255, 255, 255, 0.1)' 
+                : 'rgba(0, 0, 0, 0.1)'}`,
+            borderRadius: 3,
+          }}
+        >
+          <Typography 
+            variant="h6" 
+            gutterBottom
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 1,
+              mb: 2,
+              color: 'primary.main',
+              fontWeight: 'bold'
+            }}
+          >
+            <SearchIcon />
+            Scrape New URL
+          </Typography>
+          
+          <Box sx={{ 
+            display: 'flex', 
+            gap: 2, 
+            alignItems: 'flex-start',
+            flexDirection: { xs: 'column', sm: 'row' }
+          }}>
+            <TextField
+              fullWidth
+              label="Enter URL to scrape"
+              placeholder="https://www.example.com"
+              value={scrapeUrl}
+              onChange={(e) => setScrapeUrl(e.target.value)}
+              onKeyDown={handleKeyPress}
+              disabled={scraping}
+              variant="outlined"
+              sx={{ flex: 1 }}
+              slotProps={{
+                input: {
+                  startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />
+                }
+              }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleScrapeUrl}
+              disabled={scraping || !scrapeUrl.trim()}
+              sx={{ 
+                minWidth: { xs: '100%', sm: '120px' },
+                height: '56px', // Match TextField height
+                fontWeight: 'bold'
+              }}
+            >
+              {scraping ? 'Scraping...' : 'Scrape'}
+            </Button>
+          </Box>
+        </Paper>
 
           {/* Stats Chips */}
           <Box sx={{ 
@@ -245,6 +373,25 @@ export const Dashboard: React.FC = () => {
 
       {/* Floating Theme Toggle */}
       <FloatingThemeToggle />
+
+      {/* Snackbar for messages */}
+      {scrapeMessage && (
+        <Snackbar
+          open={true}
+          autoHideDuration={6000}
+          onClose={() => setScrapeMessage(null)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert 
+            onClose={() => setScrapeMessage(null)} 
+            severity={scrapeMessage.type}
+            variant="filled"
+            sx={{ width: '100%' }}
+          >
+            {scrapeMessage.text}
+          </Alert>
+        </Snackbar>
+      )}
     </Box>
   );
 };
