@@ -88,7 +88,7 @@ export const LinksPage: React.FC = () => {
   }, [page, urlParam, loadLinks]);
 
   // Handle page change
-  const handleChangePage = (_event: unknown, newPage: number) => {
+  const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };
 

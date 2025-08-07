@@ -69,7 +69,7 @@ export const Dashboard: React.FC = () => {
   }, [page, loadUrls]);
 
   // Handle page change
-  const handleChangePage = (_event: unknown, newPage: number) => {
+  const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };
 

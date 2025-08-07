@@ -7,13 +7,13 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TablePagination,
   Chip,
   Typography,
   Box,
   CircularProgress,
   Alert,
 } from '@mui/material';
+import { CustomPagination } from './CustomPagination';
 
 export interface DataTableColumn {
   id: string;
@@ -36,7 +36,7 @@ export interface DataTableProps {
   page: number;
   totalItems: number;
   rowsPerPage: number;
-  onPageChange: (event: unknown, newPage: number) => void;
+  onPageChange: (newPage: number) => void;
   onRowClick?: (row: DataTableRow) => void;
   emptyMessage?: string;
 }
@@ -269,29 +269,15 @@ export const DataTable: React.FC<DataTableProps> = ({
         </Table>
       </TableContainer>
       
-      {/* Pagination */}
+      {/* Custom Pagination */}
       {totalItems > 0 && (
-        <TablePagination
-          component="div"
-          count={totalItems}
-          page={page}
+        <CustomPagination
+          currentPage={page}
+          totalPages={Math.ceil(totalItems / rowsPerPage)}
+          totalItems={totalItems}
+          itemsPerPage={rowsPerPage}
           onPageChange={onPageChange}
-          rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[rowsPerPage]}
-          sx={{
-            borderTop: (theme) => 
-              `1px solid ${theme.palette.mode === 'dark' 
-                ? 'rgba(255, 255, 255, 0.1)' 
-                : 'rgba(0, 0, 0, 0.1)'}`,
-            '.MuiTablePagination-toolbar': {
-              paddingLeft: 3,
-              paddingRight: 3,
-            },
-            '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
-              color: 'text.secondary',
-              fontSize: '0.875rem',
-            },
-          }}
+          disabled={loading}
         />
       )}
     </Paper>
