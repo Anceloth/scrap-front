@@ -82,8 +82,9 @@ cd scrap-front
 # 2️⃣ Install
 npm install
 
-# 3️⃣ Configure (optional)
+# 3️⃣ Configure environment (optional)
 cp .env.local.example .env.local
+# Edit .env.local with your personal settings
 
 # 4️⃣ Run!
 npm run dev
