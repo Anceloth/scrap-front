@@ -1,15 +1,16 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context';
 import { AuthProvider } from './context/auth';
 import { AuthPage, Dashboard } from './pages';
+import { LinksPage } from './pages/LinksPage';
 import { useAuth } from './context/auth/useAuth';
 import { Box, CircularProgress } from '@mui/material';
 
-// Component to handle authentication routing
-const AppContent: React.FC = () => {
+// Protected Route Component
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { state } = useAuth();
   const { isAuthenticated, isLoading } = state;
 
-  // Show loading spinner while checking authentication
   if (isLoading) {
     return (
       <Box 
@@ -25,17 +26,44 @@ const AppContent: React.FC = () => {
     );
   }
 
-  // Show dashboard if authenticated, otherwise show auth page
-  return isAuthenticated ? <Dashboard /> : <AuthPage />;
+  return isAuthenticated ? <>{children}</> : <Navigate to="/auth" replace />;
+};
+
+// Component to handle authentication routing
+const AppContent: React.FC = () => {
+  return (
+    <Routes>
+      <Route path="/auth" element={<AuthPage />} />
+      <Route 
+        path="/dashboard" 
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/links" 
+        element={
+          <ProtectedRoute>
+            <LinksPage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
+  );
 };
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </ThemeProvider>
+    <BrowserRouter>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   );
 }
 

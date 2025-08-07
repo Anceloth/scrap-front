@@ -169,7 +169,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'AUTH_START' });
 
     try {
+      logger.info('Starting login process for:', email);
       const response = await authService.login({ email, password });
+      
+      logger.info('Login response received:', { 
+        user: response.user, 
+        hasToken: !!response.accessToken 
+      });
       
       const authData: StoredAuthData = {
         user: response.user,
@@ -186,6 +192,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       logger.info('User logged in successfully:', response.user.email);
 
     } catch (error) {
+      logger.error('Login failed:', error);
       const errorMessage = error instanceof Error 
         ? error.message 
         : (error as ApiError).message || 'Login failed';

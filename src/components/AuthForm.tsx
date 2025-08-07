@@ -12,12 +12,14 @@ import {
   Link,
 } from '@mui/material';
 import { Visibility, VisibilityOff, Person, Lock, Email } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import type { RegisterFormData, AuthMode } from '../types/auth';
 import { config, logger } from '../utils/config';
 import { ForgotPasswordDialog } from './ForgotPasswordDialog';
 import { useAuth } from '../context/auth/useAuth';
 
 export const AuthForm: React.FC = () => {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<AuthMode>('login');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -25,7 +27,7 @@ export const AuthForm: React.FC = () => {
   
   // Auth context
   const { state, login, register } = useAuth();
-  const { error: authError, isLoading: authLoading, registrationSuccess } = state;
+  const { error: authError, isLoading: authLoading, registrationSuccess, isAuthenticated } = state;
   
   const [formData, setFormData] = useState<RegisterFormData>({
     username: '',
@@ -51,6 +53,13 @@ export const AuthForm: React.FC = () => {
       setSubmitError('');
     }
   }, [registrationSuccess]);
+
+  // Redirect to dashboard after successful login
+  useEffect(() => {
+    if (isAuthenticated && mode === 'login') {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, mode, navigate]);
 
   // Handle input changes
   const handleInputChange = (field: keyof RegisterFormData) => (

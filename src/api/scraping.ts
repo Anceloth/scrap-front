@@ -12,6 +12,15 @@ export interface ScrapingUrl {
   updatedAt: string;
 }
 
+export interface ScrapingLink {
+  id: string;
+  urlId: string;
+  link: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PaginationInfo {
   currentPage: number;
   totalPages: number;
@@ -26,9 +35,20 @@ export interface UrlsResponse {
   pagination: PaginationInfo;
 }
 
+export interface LinksResponse {
+  links: ScrapingLink[];
+  pagination: PaginationInfo;
+}
+
 export interface GetUrlsParams {
   page?: number;
   limit?: number;
+}
+
+export interface GetLinksParams {
+  page?: number;
+  limit?: number;
+  url: string;
 }
 
 class ScrapingService {
@@ -58,6 +78,35 @@ class ScrapingService {
       
     } catch (error) {
       logger.error('Failed to fetch URLs:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get all links for a specific URL with pagination
+   */
+  async getLinks(params: GetLinksParams): Promise<LinksResponse> {
+    try {
+      const { page = 1, limit = 10, url } = params;
+      
+      logger.info('Fetching links for URL:', { page, limit, url });
+      
+      // Build URL with query parameters
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        url: url
+      });
+      
+      const response = await apiClient.get<ApiResponse<LinksResponse>>(
+        `${this.endpoint}/links?${queryParams.toString()}`
+      );
+
+      logger.info('Links fetched successfully:', response.data);
+      return response.data;
+      
+    } catch (error) {
+      logger.error('Failed to fetch links:', error);
       throw error;
     }
   }
