@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -12,6 +12,8 @@ import {
   TableRow,
   TablePagination,
   Chip,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import {
   Link as LinkIcon,
@@ -21,41 +23,46 @@ import {
 import { Header } from '../components/Header';
 import { FloatingThemeToggle } from '../components/FloatingThemeToggle';
 import { useAuth } from '../context/auth/useAuth';
-
-// Sample data interface
-interface DataRow {
-  id: number;
-  name: string;
-  totalLinks: number;
-  date: string;
-}
-
-// Sample data
-const sampleData: DataRow[] = [
-  { id: 1, name: 'Project Alpha', totalLinks: 245, date: '2025-08-07' },
-  { id: 2, name: 'Marketing Campaign', totalLinks: 189, date: '2025-08-06' },
-  { id: 3, name: 'Website Redesign', totalLinks: 322, date: '2025-08-05' },
-  { id: 4, name: 'Mobile App', totalLinks: 156, date: '2025-08-04' },
-  { id: 5, name: 'Social Media', totalLinks: 78, date: '2025-08-03' },
-  { id: 6, name: 'E-commerce Platform', totalLinks: 421, date: '2025-08-02' },
-  { id: 7, name: 'Analytics Dashboard', totalLinks: 267, date: '2025-08-01' },
-  { id: 8, name: 'Customer Portal', totalLinks: 134, date: '2025-07-31' },
-  { id: 9, name: 'API Documentation', totalLinks: 89, date: '2025-07-30' },
-  { id: 10, name: 'Admin Panel', totalLinks: 198, date: '2025-07-29' },
-  { id: 11, name: 'Blog Platform', totalLinks: 112, date: '2025-07-28' },
-  { id: 12, name: 'Newsletter System', totalLinks: 67, date: '2025-07-27' },
-  { id: 13, name: 'CRM Integration', totalLinks: 289, date: '2025-07-26' },
-  { id: 14, name: 'Payment Gateway', totalLinks: 156, date: '2025-07-25' },
-  { id: 15, name: 'User Authentication', totalLinks: 234, date: '2025-07-24' },
-];
+import { scrapingService, type ScrapingUrl, type PaginationInfo } from '../api/scraping';
 
 export const Dashboard: React.FC = () => {
   const { state } = useAuth();
   const { user } = state;
   
+  // API data states
+  const [urls, setUrls] = useState<ScrapingUrl[]>([]);
+  const [pagination, setPagination] = useState<PaginationInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   // Pagination state
   const [page, setPage] = useState(0);
-  const [rowsPerPage] = useState(5);
+  const rowsPerPage = 5;
+
+  // Load URLs from API
+  const loadUrls = async (pageNumber: number = 0) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await scrapingService.getUrls({
+        page: pageNumber + 1, // API expects 1-based pagination
+        limit: rowsPerPage
+      });
+      
+      setUrls(response.urls);
+      setPagination(response.pagination);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load URLs');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load data on component mount and when page changes
+  useEffect(() => {
+    loadUrls(page);
+  }, [page]);
 
   // Handle page change
   const handleChangePage = (_event: unknown, newPage: number) => {
@@ -71,11 +78,64 @@ export const Dashboard: React.FC = () => {
     });
   };
 
-  // Get current page data
-  const paginatedData = sampleData.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
+  // Transform API data to match table format
+  const transformedData = urls.map(url => ({
+    id: url.id,
+    name: url.name,
+    totalLinks: url.linksCount,
+    date: url.createdAt
+  }));
+
+  // Show loading state
+  if (loading) {
+    return (
+      <Box sx={{ 
+        minHeight: '100vh',
+        backgroundColor: (theme) => 
+          theme.palette.mode === 'dark' 
+            ? '#0a0a0a' 
+            : '#f5f5f5',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <Header />
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+          <CircularProgress size={60} />
+          <Typography variant="h6" color="text.secondary">
+            Loading URLs...
+          </Typography>
+        </Box>
+        <FloatingThemeToggle />
+      </Box>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <Box sx={{ 
+        minHeight: '100vh',
+        backgroundColor: (theme) => 
+          theme.palette.mode === 'dark' 
+            ? '#0a0a0a' 
+            : '#f5f5f5',
+      }}>
+        <Header />
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+          <Alert severity="error" sx={{ mb: 4 }}>
+            <Typography variant="h6" gutterBottom>
+              Error loading URLs
+            </Typography>
+            <Typography variant="body2">
+              {error}
+            </Typography>
+          </Alert>
+        </Container>
+        <FloatingThemeToggle />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ 
@@ -134,13 +194,13 @@ export const Dashboard: React.FC = () => {
           }}>
             <Chip 
               icon={<TableChart />}
-              label={`${sampleData.length} Total URLs`} 
+              label={`${pagination?.totalItems || 0} Total URLs`} 
               color="primary" 
               variant="outlined"
             />
             <Chip 
               icon={<LinkIcon />}
-              label={`${sampleData.reduce((sum, item) => sum + item.totalLinks, 0)} Total Links`} 
+              label={`${urls.reduce((sum, url) => sum + url.linksCount, 0)} Total Links`} 
               color="secondary" 
               variant="outlined"
             />
@@ -214,7 +274,7 @@ export const Dashboard: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {paginatedData.map((row) => {
+                {transformedData.map((row) => {
                   // Determine chip color based on total links
                   const getChipColor = (links: number) => {
                     if (links > 200) return 'success';
@@ -268,7 +328,7 @@ export const Dashboard: React.FC = () => {
           {/* Pagination */}
           <TablePagination
             component="div"
-            count={sampleData.length}
+            count={pagination?.totalItems || 0}
             page={page}
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}
@@ -316,7 +376,7 @@ export const Dashboard: React.FC = () => {
           }}>
             <Box>
               <Typography variant="h4" color="primary.main" fontWeight="bold">
-                {sampleData.length}
+                {pagination?.totalItems || 0}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Total URLs
@@ -324,7 +384,7 @@ export const Dashboard: React.FC = () => {
             </Box>
             <Box>
               <Typography variant="h4" color="secondary.main" fontWeight="bold">
-                {Math.round(sampleData.reduce((sum, item) => sum + item.totalLinks, 0) / sampleData.length)}
+                {urls.length > 0 ? Math.round(urls.reduce((sum, url) => sum + url.linksCount, 0) / urls.length) : 0}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Avg Links per URL
@@ -332,7 +392,7 @@ export const Dashboard: React.FC = () => {
             </Box>
             <Box>
               <Typography variant="h4" color="success.main" fontWeight="bold">
-                {Math.max(...sampleData.map(item => item.totalLinks))}
+                {urls.length > 0 ? Math.max(...urls.map(url => url.linksCount)) : 0}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Highest Link Count
