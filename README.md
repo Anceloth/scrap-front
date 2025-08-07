@@ -2,7 +2,7 @@
 
 # ✨ Scrap Front
 
-### 🔐 Una aplicación React moderna con autenticación elegante y tema dinámico
+### 🔐 A modern React application with elegant authentication and dynamic theming
 
 <br>
 
@@ -15,77 +15,77 @@
 
 ---
 
-## 🚀 **Stack Tecnológico**
+## 🚀 **Technology Stack**
 
 <table>
 <tr>
 <td>⚛️</td>
 <td><strong>React 18</strong></td>
-<td>Hooks y componentes funcionales</td>
+<td>Hooks and functional components</td>
 </tr>
 <tr>
 <td>🔷</td>
 <td><strong>TypeScript</strong></td>
-<td>Type safety completo</td>
+<td>Complete type safety</td>
 </tr>
 <tr>
 <td>⚡</td>
 <td><strong>Vite 7.1.0</strong></td>
-<td>Desarrollo rápido y builds optimizados</td>
+<td>Fast development and optimized builds</td>
 </tr>
 <tr>
 <td>🎨</td>
 <td><strong>Material-UI</strong></td>
-<td>Componentes elegantes y accesibles</td>
+<td>Elegant and accessible components</td>
 </tr>
 <tr>
 <td>💅</td>
 <td><strong>Emotion</strong></td>
-<td>Styling avanzado y dinámico</td>
+<td>Advanced and dynamic styling</td>
 </tr>
 </table>
 
-## 🏗️ **Estructura del Proyecto**
+## 🏗️ **Project Structure**
 
 ```
 📁 src/
 ├── 🧩 components/
-│   ├── AuthForm.tsx              # 🔐 Formulario principal
-│   ├── ThemeToggleButton.tsx     # 🌓 Botón de tema
-│   └── ForgotPasswordDialog.tsx  # 🔄 Dialog de reset
+│   ├── AuthForm.tsx              # 🔐 Main authentication form
+│   ├── ThemeToggleButton.tsx     # 🌓 Theme toggle button
+│   └── ForgotPasswordDialog.tsx  # 🔄 Password reset dialog
 ├── 🎛️ context/
 │   └── theme/
-│       └── ThemeProvider.tsx     # 🎨 Contexto de tema
+│       └── ThemeProvider.tsx     # 🎨 Theme context
 ├── 📄 pages/
-│   └── AuthPage.tsx              # 🏠 Página principal
+│   └── AuthPage.tsx              # 🏠 Main page
 ├── 🏷️ types/
-│   └── auth.ts                   # 📝 Tipos de autenticación
+│   └── auth.ts                   # 📝 Authentication types
 ├── 🔧 utils/
-│   └── config.ts                 # ⚙️ Configuración y env vars
+│   └── config.ts                 # ⚙️ Configuration and env vars
 ├── 🚀 main.tsx                   # 🎯 Entry point
-└── 📱 App.tsx                    # 🏛️ App principal
+└── 📱 App.tsx                    # 🏛️ Main app component
 ```
 
-## 🚦 **Inicio Rápido**
+## 🚦 **Quick Start**
 
-### 📋 **Prerrequisitos**
+### 📋 **Prerequisites**
 - Node.js `>= 16.0.0`
-- npm o yarn
+- npm or yarn
 
-### ⚡ **Instalación en 30 segundos**
+### ⚡ **Installation in 30 seconds**
 
 ```bash
-# 1️⃣ Clonar
+# 1️⃣ Clone
 git clone <repository-url>
 cd scrap-front
 
-# 2️⃣ Instalar
+# 2️⃣ Install
 npm install
 
-# 3️⃣ Configurar (opcional)
+# 3️⃣ Configure (optional)
 cp .env.local.example .env.local
 
-# 4️⃣ ¡Ejecutar!
+# 4️⃣ Run!
 npm run dev
 ```
 
@@ -95,28 +95,28 @@ npm run dev
 
 </div>
 
-### 📋 **Comandos Disponibles**
+### 📋 **Available Commands**
 
-| Comando | Descripción |
+| Command | Description |
 |---------|-------------|
-| `npm run dev` | 🔥 Servidor de desarrollo |
-| `npm run build` | 📦 Build para producción |
-| `npm run preview` | 👀 Preview del build |
+| `npm run dev` | 🔥 Development server |
+| `npm run build` | 📦 Production build |
+| `npm run preview` | 👀 Build preview |
 | `npm run lint` | 🔍 ESLint check |
 
-## 🎨 **Características Cool**
+## 🎨 **Cool Features**
 
 <div align="center">
 
-| Feature | Descripción |
+| Feature | Description |
 |:-------:|:------------|
-| 🪟 | **Glass Morphism Design** - Efectos de blur y transparencia |
-| ✨ | **Smooth Animations** - Transiciones fluidas en todos los elementos |
-| 🧠 | **Smart Form Validation** - Validación inteligente con UX mejorada |
-| 🌍 | **Environment Awareness** - Comportamiento diferente según entorno |
-| 📱 | **Mobile First** - Diseñado primero para móviles |
-| 🛡️ | **Type Safety** - TypeScript en toda la aplicación |
-| 🏭 | **Production Ready** - Sistema de logging y configuración empresarial |
+| 🪟 | **Glass Morphism Design** - Blur and transparency effects |
+| ✨ | **Smooth Animations** - Fluid transitions on all elements |
+| 🧠 | **Smart Form Validation** - Intelligent validation with enhanced UX |
+| 🌍 | **Environment Awareness** - Different behavior per environment |
+| 📱 | **Mobile First** - Designed mobile-first |
+| 🛡️ | **Type Safety** - TypeScript throughout the application |
+| 🏭 | **Production Ready** - Logging system and enterprise configuration |
 
 </div>
 
@@ -124,12 +124,12 @@ npm run dev
 
 <div align="center">
 
-### 📚 **¿Necesitas más detalles?**
+### 📚 **Need more details?**
 
-**[📖 README Extendido](./README_extended.md)** • Variables de entorno • Configuración avanzada • Componentes detallados
+**[📖 Extended README](./README_extended.md)** • Environment variables • Advanced configuration • Detailed components
 
 <br>
 
-**¡Hecho con ❤️ y mucho ☕!**
+**Made with ❤️ and lots of ☕!**
 
 </div>
