@@ -1,29 +1,32 @@
 import React, { useState } from 'react';
 import {
   Box,
+  Paper,
   TextField,
   Button,
   Typography,
-  Link,
   IconButton,
   InputAdornment,
   Alert,
-  Paper,
+  CircularProgress,
+  Link,
 } from '@mui/material';
 import { Visibility, VisibilityOff, Person, Lock, Email } from '@mui/icons-material';
-import type { LoginFormData, RegisterFormData, AuthMode } from '../types/auth';
+import type { RegisterFormData, AuthMode } from '../types/auth';
 import { config, logger } from '../utils/config';
 import { ForgotPasswordDialog } from './ForgotPasswordDialog';
+import { useAuth } from '../context/auth/useAuth';
 
-interface AuthFormProps {
-  onSubmit: (data: LoginFormData | RegisterFormData, mode: AuthMode) => void;
-}
-
-export const AuthForm: React.FC<AuthFormProps> = ({ onSubmit }) => {
+export const AuthForm: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>('login');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  
+  // Auth context
+  const { state, login, register } = useAuth();
+  const { error: authError, isLoading: authLoading } = state;
+  
   const [formData, setFormData] = useState<RegisterFormData>({
     username: '',
     email: '',
@@ -97,7 +100,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSubmit }) => {
   };
 
   // Handle form submission
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     
     if (!validateForm()) {
@@ -106,16 +109,14 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSubmit }) => {
 
     try {
       if (mode === 'login') {
-        const loginData: LoginFormData = {
-          email: formData.email,
-          password: formData.password,
-        };
-        onSubmit(loginData, mode);
+        await login(formData.email, formData.password);
       } else {
-        onSubmit(formData, mode);
+        await register(formData.username, formData.email, formData.password);
       }
-    } catch {
-      setSubmitError('An error occurred. Please try again.');
+      // Success will be handled by the auth context
+    } catch (error) {
+      // Error will be handled by the auth context
+      logger.error('Auth submission failed:', error);
     }
   };
 
@@ -226,6 +227,23 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSubmit }) => {
               : 'Sign up to get started'
             }
           </Typography>
+
+          {/* Error Message */}
+          {authError && (
+            <Alert 
+              severity="error" 
+              sx={{ 
+                mb: 2,
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                '& .MuiAlert-message': {
+                  width: '100%',
+                  textAlign: 'left'
+                }
+              }}
+            >
+              {authError}
+            </Alert>
+          )}
         </Box>
 
         {submitError && (
@@ -413,6 +431,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSubmit }) => {
             fullWidth
             variant="contained"
             size="large"
+            disabled={authLoading}
             sx={{ 
               mt: { xs: 2.5, sm: 3 }, 
               mb: { xs: 1.5, sm: 2 }, 
@@ -433,7 +452,16 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSubmit }) => {
               transition: 'all 0.2s ease-in-out',
             }}
           >
-            {isLogin ? 'Sign In' : 'Create Account'}
+            {authLoading ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CircularProgress size={20} color="inherit" />
+                {isLogin ? 'Signing In...' : 'Creating Account...'}
+              </Box>
+            ) : (
+              <>
+                {isLogin ? 'Sign In' : 'Create Account'}
+              </>
+            )}
           </Button>
 
           {/* Forgot Password Link - Only show for login mode when enabled */}
