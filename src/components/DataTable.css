@@ -130,16 +130,29 @@
   border-bottom-color: rgba(255, 255, 255, 0.06);
 }
 
-/* Text alignments */
-.text-align-left {
+/* Header cell text alignments */
+.data-table-header-cell.text-align-left {
   text-align: left;
 }
 
-.text-align-center {
+.data-table-header-cell.text-align-center {
   text-align: center;
 }
 
-.text-align-right {
+.data-table-header-cell.text-align-right {
+  text-align: right;
+}
+
+/* Body cell text alignments */
+.data-table-body-cell.text-align-left {
+  text-align: left;
+}
+
+.data-table-body-cell.text-align-center {
+  text-align: center;
+}
+
+.data-table-body-cell.text-align-right {
   text-align: right;
 }
 
