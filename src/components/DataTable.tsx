@@ -134,8 +134,18 @@ export const DataTable: React.FC<DataTableProps> = ({
             <TableRow sx={{ 
               backgroundColor: (theme) => 
                 theme.palette.mode === 'dark' 
-                  ? 'rgba(255, 255, 255, 0.05)'
-                  : 'rgba(0, 0, 0, 0.02)',
+                  ? 'rgba(25, 118, 210, 0.15)' // Azul oscuro transparente
+                  : 'rgba(25, 118, 210, 0.08)', // Azul claro transparente
+              borderBottom: (theme) => 
+                `2px solid ${theme.palette.mode === 'dark' 
+                  ? 'rgba(100, 181, 246, 0.3)' 
+                  : 'rgba(25, 118, 210, 0.2)'}`,
+              '&:hover': {
+                backgroundColor: (theme) => 
+                  theme.palette.mode === 'dark' 
+                    ? 'rgba(25, 118, 210, 0.2)'
+                    : 'rgba(25, 118, 210, 0.12)',
+              },
             }}>
               {columns.map((column) => (
                 <TableCell 
@@ -143,8 +153,15 @@ export const DataTable: React.FC<DataTableProps> = ({
                   sx={{ 
                     fontWeight: 'bold', 
                     fontSize: '1rem',
-                    color: 'primary.main',
-                    textAlign: column.align || 'left'
+                    color: (theme) => 
+                      theme.palette.mode === 'dark' 
+                        ? '#64b5f6' // Azul claro en modo oscuro
+                        : '#1976d2', // Azul oscuro en modo claro
+                    textAlign: column.align || 'left',
+                    py: 2.5, // Más padding vertical
+                    px: 2,   // Padding horizontal consistente
+                    background: 'transparent',
+                    borderBottom: 'none', // Remover borde individual de celda
                   }}
                 >
                   <Box sx={{ 
