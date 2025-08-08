@@ -1,0 +1,152 @@
+/* DataTable Styles */
+
+/* Paper Container */
+.data-table-paper {
+  background: transparent;
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+/* Light mode paper */
+.data-table-paper.light-mode {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode paper */
+.data-table-paper.dark-mode {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Table Header Row */
+.data-table-header-row {
+  border-bottom: 2px solid;
+  transition: background-color 0.2s ease;
+}
+
+/* Light mode header */
+.data-table-header-row.light-mode {
+  background: rgba(25, 118, 210, 0.08);
+  border-bottom-color: rgba(25, 118, 210, 0.2);
+}
+
+/* Dark mode header */
+.data-table-header-row.dark-mode {
+  background: rgba(25, 118, 210, 0.15);
+  border-bottom-color: rgba(100, 181, 246, 0.3);
+}
+
+/* Header hover effect */
+.data-table-header-row.light-mode:hover {
+  background: rgba(25, 118, 210, 0.12);
+}
+
+.data-table-header-row.dark-mode:hover {
+  background: rgba(25, 118, 210, 0.2);
+}
+
+/* Table Header Cells */
+.data-table-header-cell {
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 20px 16px;
+  background: transparent;
+  border-bottom: none;
+}
+
+/* Light mode header cell */
+.data-table-header-cell.light-mode {
+  color: #1976d2;
+}
+
+/* Dark mode header cell */
+.data-table-header-cell.dark-mode {
+  color: #64b5f6;
+}
+
+/* Header cell content container */
+.data-table-header-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.data-table-header-content.align-left {
+  justify-content: flex-start;
+}
+
+.data-table-header-content.align-center {
+  justify-content: center;
+}
+
+.data-table-header-content.align-right {
+  justify-content: flex-end;
+}
+
+/* Table Body Rows */
+.data-table-body-row {
+  cursor: default;
+  transition: background-color 0.2s ease;
+}
+
+.data-table-body-row.clickable {
+  cursor: pointer;
+}
+
+/* Row hover effects */
+.data-table-body-row.light-mode:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.data-table-body-row.dark-mode:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Striped rows */
+.data-table-body-row.light-mode:nth-of-type(even) {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.data-table-body-row.dark-mode:nth-of-type(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Table Body Cells */
+.data-table-body-cell {
+  padding: 12px 16px;
+  border-bottom: 1px solid;
+}
+
+/* Light mode body cell */
+.data-table-body-cell.light-mode {
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+/* Dark mode body cell */
+.data-table-body-cell.dark-mode {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Text alignments */
+.text-align-left {
+  text-align: left;
+}
+
+.text-align-center {
+  text-align: center;
+}
+
+.text-align-right {
+  text-align: right;
+}
+
+/* Empty state */
+.data-table-empty-cell {
+  text-align: center;
+  padding: 32px 16px;
+}
+
+/* Loading and error states keep their inline styles for dynamic theming */

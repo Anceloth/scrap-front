@@ -12,8 +12,10 @@ import {
   Box,
   CircularProgress,
   Alert,
+  useTheme,
 } from '@mui/material';
 import { CustomPagination } from './CustomPagination';
+import './DataTable.css';
 
 export interface DataTableColumn {
   id: string;
@@ -53,6 +55,8 @@ export const DataTable: React.FC<DataTableProps> = ({
   onRowClick,
   emptyMessage = 'No data available'
 }) => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
   // Format date for display
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -114,66 +118,18 @@ export const DataTable: React.FC<DataTableProps> = ({
   return (
     <Paper 
       elevation={0}
-      sx={{
-        backgroundColor: (theme) => 
-          theme.palette.mode === 'dark' 
-            ? 'rgba(255, 255, 255, 0.05)'
-            : 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(20px)',
-        border: (theme) => 
-          `1px solid ${theme.palette.mode === 'dark' 
-            ? 'rgba(255, 255, 255, 0.1)' 
-            : 'rgba(0, 0, 0, 0.1)'}`,
-        borderRadius: 3,
-        overflow: 'hidden',
-      }}
+      className={`data-table-paper ${isDarkMode ? 'dark-mode' : 'light-mode'}`}
     >
       <TableContainer>
         <Table>
           <TableHead>
-            <TableRow sx={{ 
-              backgroundColor: (theme) => 
-                theme.palette.mode === 'dark' 
-                  ? 'rgba(25, 118, 210, 0.15)' // Azul oscuro transparente
-                  : 'rgba(25, 118, 210, 0.08)', // Azul claro transparente
-              borderBottom: (theme) => 
-                `2px solid ${theme.palette.mode === 'dark' 
-                  ? 'rgba(100, 181, 246, 0.3)' 
-                  : 'rgba(25, 118, 210, 0.2)'}`,
-              '&:hover': {
-                backgroundColor: (theme) => 
-                  theme.palette.mode === 'dark' 
-                    ? 'rgba(25, 118, 210, 0.2)'
-                    : 'rgba(25, 118, 210, 0.12)',
-              },
-            }}>
+            <TableRow className={`data-table-header-row ${isDarkMode ? 'dark-mode' : 'light-mode'}`}>
               {columns.map((column) => (
                 <TableCell 
                   key={column.id}
-                  sx={{ 
-                    fontWeight: 'bold', 
-                    fontSize: '1rem',
-                    color: (theme) => 
-                      theme.palette.mode === 'dark' 
-                        ? '#64b5f6' // Azul claro en modo oscuro
-                        : '#1976d2', // Azul oscuro en modo claro
-                    textAlign: column.align || 'left',
-                    py: 2.5, // Más padding vertical
-                    px: 2,   // Padding horizontal consistente
-                    background: 'transparent',
-                    borderBottom: 'none', // Remover borde individual de celda
-                  }}
+                  className={`data-table-header-cell ${isDarkMode ? 'dark-mode' : 'light-mode'} text-align-${column.align || 'left'}`}
                 >
-                  <Box sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: (() => {
-                      if (column.align === 'center') return 'center';
-                      if (column.align === 'right') return 'flex-end';
-                      return 'flex-start';
-                    })(),
-                    gap: 1 
-                  }}>
+                  <Box className={`data-table-header-content align-${column.align || 'left'}`}>
                     {column.icon}
                     {column.label}
                   </Box>
@@ -184,7 +140,10 @@ export const DataTable: React.FC<DataTableProps> = ({
           <TableBody>
             {rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length} sx={{ textAlign: 'center', py: 4 }}>
+                <TableCell 
+                  colSpan={columns.length} 
+                  className={`data-table-empty-cell data-table-body-cell ${isDarkMode ? 'dark-mode' : 'light-mode'}`}
+                >
                   <Typography variant="body1" color="text.secondary">
                     {emptyMessage}
                   </Typography>
@@ -195,21 +154,7 @@ export const DataTable: React.FC<DataTableProps> = ({
                 <TableRow 
                   key={row.id}
                   onClick={() => onRowClick?.(row)}
-                  sx={{
-                    cursor: onRowClick ? 'pointer' : 'default',
-                    '&:hover': {
-                      backgroundColor: (theme) => 
-                        theme.palette.mode === 'dark' 
-                          ? 'rgba(255, 255, 255, 0.05)'
-                          : 'rgba(0, 0, 0, 0.04)',
-                    },
-                    '&:nth-of-type(even)': {
-                      backgroundColor: (theme) => 
-                        theme.palette.mode === 'dark' 
-                          ? 'rgba(255, 255, 255, 0.02)'
-                          : 'rgba(0, 0, 0, 0.02)',
-                    },
-                  }}
+                  className={`data-table-body-row ${isDarkMode ? 'dark-mode' : 'light-mode'} ${onRowClick ? 'clickable' : ''}`}
                 >
                   {columns.map((column) => {
                     const value = row[column.id];
@@ -273,7 +218,7 @@ export const DataTable: React.FC<DataTableProps> = ({
                     return (
                       <TableCell 
                         key={column.id}
-                        sx={{ textAlign: column.align || 'left' }}
+                        className={`data-table-body-cell ${isDarkMode ? 'dark-mode' : 'light-mode'} text-align-${column.align || 'left'}`}
                       >
                         {displayValue}
                       </TableCell>
